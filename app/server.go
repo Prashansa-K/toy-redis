@@ -24,16 +24,33 @@ func main() {
 		os.Exit(1)
 	}
 
-	defer conn.Close()
+		defer conn.Close()
 
-	pongMsg := []byte("+PONG\r\n")
+	for {
+		
+		// Client sends two pings like this: echo -e "ping\nping" | redis-cli
+		// Check data read
+		buf := make([]byte, 128)
+		n, err := conn.Read(buf)
+		if err != nil {
+			fmt.Println("Error reading from connection: ", err.Error())
+			os.Exit(1)
+		}
 
-	n, err := conn.Write(pongMsg)
-	if err != nil {
-		fmt.Println("Error writing to connection: ", err.Error())
-		os.Exit(1);
-	}
+		fmt.Println("read %d bytes", n)
+		// fmt.Printf("buf %c", buf[:n])
+
+
 	
-	fmt.Println("sent %d bytes", n)
+		pongMsg := []byte("+PONG\r\n")
+
+		_, err = conn.Write(pongMsg)
+		if err != nil {
+			fmt.Println("Error writing to connection: ", err.Error())
+			os.Exit(1);
+		}
+		
+		// fmt.Println("sent %d bytes", n)
+	}
 	
 }
