@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"io"
 )
+
 
 func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -18,39 +20,52 @@ func main() {
 
 	defer listener.Close()
 
-	conn, err := listener.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
-	}
-
-		defer conn.Close()
-
 	for {
-		
-		// Client sends two pings like this: echo -e "ping\nping" | redis-cli
-		// Check data read
-		buf := make([]byte, 128)
-		n, err := conn.Read(buf)
+		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("Error reading from connection: ", err.Error())
+			fmt.Println("Error accepting connection: ", err.Error())
 			os.Exit(1)
 		}
 
-		fmt.Println("read %d bytes", n)
-		// fmt.Printf("buf %c", buf[:n])
-
-
-	
-		pongMsg := []byte("+PONG\r\n")
-
-		_, err = conn.Write(pongMsg)
-		if err != nil {
-			fmt.Println("Error writing to connection: ", err.Error())
-			os.Exit(1);
-		}
 		
-		// fmt.Println("sent %d bytes", n)
+		
+		// Client sends two pings like this: echo -e "ping\nping" | redis-cli
+		// Check data read
+
+		go func() {
+			defer conn.Close()
+
+			for {
+
+				buf := make([]byte, 128)
+				_, err := conn.Read(buf)
+				if err != nil {
+					if err == io.EOF {
+						fmt.Println("Connection closed by client: ", err.Error())
+						break
+					}
+
+					fmt.Println("Error reading from connection: ", err.Error())
+					os.Exit(1)
+				}
+	
+				// fmt.Println("read %d bytes", n)
+				// fmt.Printf("buf %c", buf[:n])
+			
+				pongMsg := []byte("+PONG\r\n")
+	
+				_, err = conn.Write(pongMsg)
+				if err != nil {
+					fmt.Println("Error writing to connection: ", err.Error())
+					os.Exit(1);
+				}
+			
+				// fmt.Println("sent %d bytes", n)
+			}
+
+			
+		}()
+		
 	}
 	
 }
