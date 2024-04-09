@@ -13,8 +13,6 @@ type RespCommand struct {
 
 type RespOutput string 
 
-const CRLF = "\r\n" // change to backticks to run locally
-
 // Redis client commands are always in array format - an array of bulk strings
 // Example:
 // "*2\r\n$4\r\necho\r\n$5\r\napple\r\n"
@@ -61,10 +59,12 @@ func parseClientInputResp(input []byte) (RespCommand, error){
 func createRespOutput(output string, respType string) (RespOutput, error){
 	respOutput := ""
 	switch respType {
-		case "simpleString":
-			respOutput = fmt.Sprintf("+%s\r\n", output)
-		case "bulkString":
-			respOutput = fmt.Sprintf("$%d\r\n%s\r\n", len(output), output)
+		case BULKSTRING:
+			respOutput = fmt.Sprintf("+%s%s", output, CRLF)
+		case SIMPLESTRING:
+			respOutput = fmt.Sprintf("$%d%s%s%s", len(output), CRLF, output, CRLF)
+		case EMPTY:
+			respOutput = EMPTYRESPONSE
 		default:
 			return RespOutput(respOutput), errors.New("Not supported")
 	}

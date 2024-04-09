@@ -6,31 +6,37 @@ import (
 )
 
 func executePing() (RespOutput, error) {
-	return createRespOutput("PONG", "simpleString")
+	return createRespOutput(PONG, SIMPLESTRING)
 }
 
 func executeEcho(args []string) (RespOutput, error) {
-	return createRespOutput(args[0], "bulkString")
+	return createRespOutput(args[0], BULKSTRING)
 }
 
 func executeSet(args []string) (RespOutput, error) {
-	set(args[0], args[1])
-	return createRespOutput("OK", "simpleString")
+	set(args)
+	return createRespOutput(OK, SIMPLESTRING)
 }
 
 func executeGet(args []string) (RespOutput, error) {
-	return createRespOutput(get(args[0]), "bulkString")
+	value := get(args[0])
+
+	if (value == NILSTRING) {
+		return createRespOutput(NILSTRING, EMPTY)
+	}
+
+	return createRespOutput(value, BULKSTRING)
 }
 
 func executeCommand(clientCall ClientCall) (RespOutput, error) {
-	switch strings.ToLower(clientCall.respCommand.command) {
-		case "ping":
+	switch strings.ToUpper(clientCall.respCommand.command) {
+		case PING:
 			return executePing()
-		case "echo":
+		case ECHO:
 			return executeEcho(clientCall.respCommand.args)
-		case "set":
+		case SET:
 			return executeSet(clientCall.respCommand.args)
-		case "get":
+		case GET:
 			return executeGet(clientCall.respCommand.args)
 		default:
 			return "", errors.New("Command not implemented yet!")
