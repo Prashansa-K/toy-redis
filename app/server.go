@@ -73,11 +73,21 @@ func handleClientCall(conn net.Conn, clientCalls chan ClientCall) {
 
 func main() {
 	// Initiate server
-	listener, err := net.Listen("tcp", "0.0.0.0:6379")
+	osArgs := os.Args
+	port := DEFAULT_PORT
+
+	if (len(osArgs) > 1 && osArgs[1] == PORT_ARGUMENT_FLAG) {
+		port = osArgs[2]
+	}
+
+	address := fmt.Sprintf("%s:%s", LOCALHOST, port)
+
+	listener, err := net.Listen(TCP_PROTOCOL, address)
 	if err != nil {
 		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
 	}
+	fmt.Println("Server running on port: ", port)
 
 	defer listener.Close()
 

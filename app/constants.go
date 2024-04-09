@@ -1,6 +1,11 @@
 package main
 
 const (
+	TCP_PROTOCOL = "tcp"
+	LOCALHOST = "0.0.0.0"
+	DEFAULT_PORT = "6379"
+	PORT_ARGUMENT_FLAG = "--port"
+
 	CRLF = "\r\n" // change to backticks to run locally
 
 	// Commands
