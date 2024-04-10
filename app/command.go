@@ -28,6 +28,15 @@ func executeGet(args []string) (RespOutput, error) {
 	return createRespOutput(value, BULKSTRING)
 }
 
+func executeInfo(args []string) (RespOutput, error) {
+	if (strings.ToUpper(args[0]) == REPLICATION) {
+		roleString := ROLE_STRING + serverConfig.role
+		return createRespOutput(roleString, BULKSTRING)
+	} else {
+		return createRespOutput(NILSTRING, EMPTY)
+	}
+}
+
 func executeCommand(clientCall ClientCall) (RespOutput, error) {
 	switch strings.ToUpper(clientCall.respCommand.command) {
 		case PING:
@@ -38,6 +47,8 @@ func executeCommand(clientCall ClientCall) (RespOutput, error) {
 			return executeSet(clientCall.respCommand.args)
 		case GET:
 			return executeGet(clientCall.respCommand.args)
+		case INFO:
+			return executeInfo(clientCall.respCommand.args)
 		default:
 			return "", errors.New("Command not implemented yet!")
 	}

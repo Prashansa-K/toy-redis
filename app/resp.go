@@ -59,9 +59,9 @@ func parseClientInputResp(input []byte) (RespCommand, error){
 func createRespOutput(output string, respType string) (RespOutput, error){
 	respOutput := ""
 	switch respType {
-		case BULKSTRING:
-			respOutput = fmt.Sprintf("+%s%s", output, CRLF)
 		case SIMPLESTRING:
+			respOutput = fmt.Sprintf("+%s%s", output, CRLF)
+		case BULKSTRING:
 			respOutput = fmt.Sprintf("$%d%s%s%s", len(output), CRLF, output, CRLF)
 		case EMPTY:
 			respOutput = EMPTYRESPONSE

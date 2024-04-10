@@ -5,7 +5,15 @@ import (
 	"net"
 	"os"
 	"io"
+	"flag"
 )
+
+var serverConfig struct {
+	port string
+	address string
+	replicaOf string
+	role string
+}
 
 type ClientCall struct {
 	conn net.Conn
@@ -73,21 +81,34 @@ func handleClientCall(conn net.Conn, clientCalls chan ClientCall) {
 
 func main() {
 	// Initiate server
-	osArgs := os.Args
-	port := DEFAULT_PORT
 
-	if (len(osArgs) > 1 && osArgs[1] == PORT_ARGUMENT_FLAG) {
-		port = osArgs[2]
+	// os args are fine in case of one argument.
+	// For >1, let's use flag so that positioning problem doesn't arise
+	// osArgs := os.Args
+	// port := DEFAULT_PORT
+	// if (len(osArgs) > 1 && osArgs[1] == PORT_ARGUMENT_FLAG) {
+	// 	port = osArgs[2]
+	// }
+
+	flag.StringVar(&serverConfig.port, "port", DEFAULT_PORT, "port on which redis server would run")
+	flag.StringVar(&serverConfig.replicaOf, "replicaOf", "", "starts redis server in slave mode")
+	flag.Parse() // parses the flags from os.Args
+
+	serverConfig.address = fmt.Sprintf("%s:%s", LOCALHOST, serverConfig.port)
+
+	// No flag passed
+	if (serverConfig.replicaOf == "") {
+		serverConfig.role = MASTER_ROLE
+	} else {
+		serverConfig.role = SLAVE_ROLE
 	}
 
-	address := fmt.Sprintf("%s:%s", LOCALHOST, port)
-
-	listener, err := net.Listen(TCP_PROTOCOL, address)
+	listener, err := net.Listen(TCP_PROTOCOL, serverConfig.address)
 	if err != nil {
 		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
 	}
-	fmt.Println("Server running on port: ", port)
+	fmt.Printf("Server running as %s on port: %s", serverConfig.role, serverConfig.port,)
 
 	defer listener.Close()
 
