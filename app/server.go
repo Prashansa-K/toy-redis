@@ -91,7 +91,7 @@ func main() {
 	// }
 
 	flag.StringVar(&serverConfig.port, "port", DEFAULT_PORT, "port on which redis server would run")
-	flag.StringVar(&serverConfig.replicaOf, "replicaOf", "", "starts redis server in slave mode")
+	flag.StringVar(&serverConfig.replicaOf, "replicaof", "", "starts redis server in slave mode")
 	flag.Parse() // parses the flags from os.Args
 
 	serverConfig.address = fmt.Sprintf("%s:%s", LOCALHOST, serverConfig.port)
