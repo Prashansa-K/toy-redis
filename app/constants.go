@@ -22,6 +22,9 @@ const (
 	SET = "SET"
 	INFO = "INFO"
 
+	// Requests
+	PING_REQUEST = "*1\r\n$4\r\nping\r\n"
+
 	// Command Arguments
 	EXPIRYARG = "PX"
 	REPLICATION = "REPLICATION"

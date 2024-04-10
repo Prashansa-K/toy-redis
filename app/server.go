@@ -97,7 +97,7 @@ func main() {
 	serverConfig.address = fmt.Sprintf("%s:%s", LOCALHOST, serverConfig.port)
 
 	// No flag passed
-	if (serverConfig.replicaOf == "") {
+	if serverConfig.replicaOf == "" {
 		serverConfig.role = MASTER_ROLE
 	} else {
 		serverConfig.role = SLAVE_ROLE
@@ -111,6 +111,10 @@ func main() {
 	fmt.Printf("Server running as %s on port: %s", serverConfig.role, serverConfig.port,)
 
 	defer listener.Close()
+
+	if serverConfig.role == SLAVE_ROLE {
+		connectToMaster()
+	}
 
 	// Create channel
 	clientCalls := make(chan ClientCall)
