@@ -22,6 +22,7 @@ const (
 	SET = "SET"
 	INFO = "INFO"
 	REPLCONF = "REPLCONF"
+	PSYNC = "PSYNC"
 
 	// Command Arguments
 	EXPIRYARG = "PX"
@@ -38,6 +39,8 @@ const (
 	EMPTYRESPONSE = "$-1\r\n"
 	PONG = "PONG"
 	OK = "OK"
+	FULLRESYNC = "FULLRESYNC"
+
 	NILSTRING = ""
 	ROLE_STRING = "role:"
 	MASTER_REPLICATION_ID_STRING = "master_replid:"

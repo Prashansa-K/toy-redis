@@ -36,7 +36,7 @@ func executeInfo(args []string) (RespString, error) {
 			return createRespString(BULKSTRING, roleString)
 		}
 
-		replId := MASTER_REPLICATION_ID_STRING + "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
+		replId := MASTER_REPLICATION_ID_STRING + serverConfig.replicationId
 		replOffset := MASTER_REPLICATION_OFFSET_STRING + "0"
 
 		return createRespString(BULKSTRING, roleString, replId, replOffset)

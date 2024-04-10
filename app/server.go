@@ -13,6 +13,7 @@ var serverConfig struct {
 	address string
 	replicaOf string
 	role string
+	replicationId string
 }
 
 type ClientCall struct {
@@ -99,6 +100,7 @@ func main() {
 	// No flag passed
 	if serverConfig.replicaOf == "" {
 		serverConfig.role = MASTER_ROLE
+		serverConfig.replicationId = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
 	} else {
 		serverConfig.role = SLAVE_ROLE
 	}
