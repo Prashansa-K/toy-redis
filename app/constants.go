@@ -21,9 +21,7 @@ const (
 	GET = "GET"
 	SET = "SET"
 	INFO = "INFO"
-
-	// Requests
-	PING_REQUEST = "*1\r\n$4\r\nping\r\n"
+	REPLCONF = "REPLCONF"
 
 	// Command Arguments
 	EXPIRYARG = "PX"
@@ -33,6 +31,7 @@ const (
 	EMPTY = 0
 	SIMPLESTRING = 1
 	BULKSTRING = 2
+	RESPARRAY = 3
 	
 
 	// Responses

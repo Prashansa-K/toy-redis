@@ -11,7 +11,7 @@ type RespCommand struct {
 	args []string
 }
 
-type RespOutput string
+type RespString string
 
 // Redis client commands are always in array format - an array of bulk strings
 // Example:
@@ -56,13 +56,14 @@ func parseClientInputResp(input []byte) (RespCommand, error){
 }
 
 
-func createRespOutput(respType int, output ...string) (RespOutput, error){
+func createRespString(respType int, output ...string) (RespString, error){
 	respOutput := ""
 	switch respType {
 		case SIMPLESTRING:
 			for _, outputString := range output {
 				respOutput += fmt.Sprintf("+%s%s", outputString, CRLF)
 			}
+
 		case BULKSTRING:
 			if len(output) == 1 {
 				respOutput = fmt.Sprintf("$%d%s%s%s", len(output[0]), CRLF, output[0], CRLF)
@@ -77,13 +78,26 @@ func createRespOutput(respType int, output ...string) (RespOutput, error){
 				// Adding length of LFs added in between each output string
 				totalRespStringLength = totalRespStringLength + len(output) 
 
+				// Adding length of total string in front
 				respOutput  = fmt.Sprintf("$%d%s%s%s", totalRespStringLength, CRLF, respOutput, CRLF)
 			}
+
+		case RESPARRAY:
+			totalLenOfRespArray := len(output)
+
+			for _, outputString := range output {
+				respOutput += fmt.Sprintf("$%d%s%s%s", len(outputString), CRLF, outputString, CRLF)
+			}
+
+			// Adding length of array in front
+			respOutput = fmt.Sprintf("*%d%s%s", totalLenOfRespArray, CRLF, respOutput)
+
 		case EMPTY:
 			respOutput = EMPTYRESPONSE
+			
 		default:
-			return RespOutput(respOutput), errors.New("Not supported")
+			return RespString(respOutput), errors.New("Not supported")
 	}
 
-	return RespOutput(respOutput), nil
+	return RespString(respOutput), nil
 }

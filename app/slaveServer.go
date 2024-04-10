@@ -23,5 +23,45 @@ func connectToMaster() {
 	}
 	// defer connection.Close()
 
-	connection.Write([]byte(PING_REQUEST))
+	// starting handshake
+	pingMaster(connection)
+
+	// 1st replconf
+	sendReplConfToMaster(connection, REPLCONF, "listening-port", serverConfig.port)
+	// 2nd replconf
+	sendReplConfToMaster(connection, REPLCONF, "capa", "psync2")
+}
+
+func pingMaster (connection net.Conn) {
+	pingRequest, _ := createRespString(RESPARRAY, PING)
+
+	_, err := connection.Write([]byte(pingRequest))
+	if err != nil {
+		fmt.Println("Error sending ping to master: ", err.Error())
+		os.Exit(1)
+	}
+
+	buf := make([]byte, 128)
+	_, err = connection.Read(buf)
+	if err != nil {
+		fmt.Println("Received error from master: ", err.Error())
+		os.Exit(1)
+	}
+}
+
+func sendReplConfToMaster (connection net.Conn, replConfCommand ...string) {
+	replConfRequest, _ := createRespString(RESPARRAY, replConfCommand...)
+
+	_, err := connection.Write([]byte(replConfRequest))
+	if err != nil {
+		fmt.Println("Error sending replconf to master: ", err.Error())
+		os.Exit(1)
+	}
+
+	buf := make([]byte, 128)
+	_, err = connection.Read(buf)
+	if err != nil {
+		fmt.Println("Received error from master: ", err.Error())
+		os.Exit(1)
+	}
 }

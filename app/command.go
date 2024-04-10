@@ -5,47 +5,51 @@ import (
 	"errors"
 )
 
-func executePing() (RespOutput, error) {
-	return createRespOutput(SIMPLESTRING, PONG)
+func executePing() (RespString, error) {
+	return createRespString(SIMPLESTRING, PONG)
 }
 
-func executeEcho(args []string) (RespOutput, error) {
-	return createRespOutput(BULKSTRING, args[0])
+func executeEcho(args []string) (RespString, error) {
+	return createRespString(BULKSTRING, args[0])
 }
 
-func executeSet(args []string) (RespOutput, error) {
+func executeSet(args []string) (RespString, error) {
 	set(args)
-	return createRespOutput(SIMPLESTRING, OK)
+	return createRespString(SIMPLESTRING, OK)
 }
 
-func executeGet(args []string) (RespOutput, error) {
+func executeGet(args []string) (RespString, error) {
 	value := get(args[0])
 
 	if (value == NILSTRING) {
-		return createRespOutput(EMPTY, NILSTRING)
+		return createRespString(EMPTY, NILSTRING)
 	}
 
-	return createRespOutput(BULKSTRING, value)
+	return createRespString(BULKSTRING, value)
 }
 
-func executeInfo(args []string) (RespOutput, error) {
+func executeInfo(args []string) (RespString, error) {
 	if (strings.ToUpper(args[0]) == REPLICATION) {
 		roleString := ROLE_STRING + serverConfig.role
 
 		if (serverConfig.role == SLAVE_ROLE) {
-			return createRespOutput(BULKSTRING, roleString)
+			return createRespString(BULKSTRING, roleString)
 		}
-		
+
 		replId := MASTER_REPLICATION_ID_STRING + "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
 		replOffset := MASTER_REPLICATION_OFFSET_STRING + "0"
 
-		return createRespOutput(BULKSTRING, roleString, replId, replOffset)
+		return createRespString(BULKSTRING, roleString, replId, replOffset)
 	} else {
-		return createRespOutput(EMPTY, NILSTRING)
+		return createRespString(EMPTY, NILSTRING)
 	}
 }
 
-func executeCommand(clientCall ClientCall) (RespOutput, error) {
+func executeReplConf(args []string) (RespString, error) {
+	return createRespString(SIMPLESTRING, OK)
+}
+
+func executeCommand(clientCall ClientCall) (RespString, error) {
 	switch strings.ToUpper(clientCall.respCommand.command) {
 		case PING:
 			return executePing()
@@ -57,6 +61,8 @@ func executeCommand(clientCall ClientCall) (RespOutput, error) {
 			return executeGet(clientCall.respCommand.args)
 		case INFO:
 			return executeInfo(clientCall.respCommand.args)
+		case REPLCONF:
+			return executeReplConf(clientCall.respCommand.args)
 		default:
 			return "", errors.New("Command not implemented yet!")
 	}
