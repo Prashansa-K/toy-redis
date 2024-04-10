@@ -11,7 +11,7 @@ type RespCommand struct {
 	args []string
 }
 
-type RespOutput string 
+type RespOutput string
 
 // Redis client commands are always in array format - an array of bulk strings
 // Example:
@@ -56,13 +56,29 @@ func parseClientInputResp(input []byte) (RespCommand, error){
 }
 
 
-func createRespOutput(output string, respType string) (RespOutput, error){
+func createRespOutput(respType int, output ...string) (RespOutput, error){
 	respOutput := ""
 	switch respType {
 		case SIMPLESTRING:
-			respOutput = fmt.Sprintf("+%s%s", output, CRLF)
+			for _, outputString := range output {
+				respOutput += fmt.Sprintf("+%s%s", outputString, CRLF)
+			}
 		case BULKSTRING:
-			respOutput = fmt.Sprintf("$%d%s%s%s", len(output), CRLF, output, CRLF)
+			if len(output) == 1 {
+				respOutput = fmt.Sprintf("$%d%s%s%s", len(output[0]), CRLF, output[0], CRLF)
+			} else {
+				totalRespStringLength := 0
+				
+				for _, outputString := range output {
+					totalRespStringLength += len(outputString)
+					respOutput += fmt.Sprintf("%s%s", outputString, LF)
+				}
+
+				// Adding length of LFs added in between each output string
+				totalRespStringLength = totalRespStringLength + len(output) 
+
+				respOutput  = fmt.Sprintf("$%d%s%s%s", totalRespStringLength, CRLF, respOutput, CRLF)
+			}
 		case EMPTY:
 			respOutput = EMPTYRESPONSE
 		default:

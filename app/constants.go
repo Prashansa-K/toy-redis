@@ -13,6 +13,7 @@ const (
 	PORT_ARGUMENT_FLAG_SHORT = "-p"
 
 	CRLF = "\r\n" // change to backticks to run locally
+	LF="\n"
 
 	// Commands
 	PING = "PING"
@@ -26,9 +27,10 @@ const (
 	REPLICATION = "REPLICATION"
 
 	// Response Types
-	SIMPLESTRING = "simpleString"
-	BULKSTRING = "bulkString"
-	EMPTY = "empty"
+	EMPTY = 0
+	SIMPLESTRING = 1
+	BULKSTRING = 2
+	
 
 	// Responses
 	EMPTYRESPONSE = "$-1\r\n"
@@ -36,4 +38,6 @@ const (
 	OK = "OK"
 	NILSTRING = ""
 	ROLE_STRING = "role:"
+	MASTER_REPLICATION_ID_STRING = "master_replid:"
+	MASTER_REPLICATION_OFFSET_STRING = "master_repl_offset:"
 )

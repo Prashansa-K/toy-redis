@@ -6,34 +6,42 @@ import (
 )
 
 func executePing() (RespOutput, error) {
-	return createRespOutput(PONG, SIMPLESTRING)
+	return createRespOutput(SIMPLESTRING, PONG)
 }
 
 func executeEcho(args []string) (RespOutput, error) {
-	return createRespOutput(args[0], BULKSTRING)
+	return createRespOutput(BULKSTRING, args[0])
 }
 
 func executeSet(args []string) (RespOutput, error) {
 	set(args)
-	return createRespOutput(OK, SIMPLESTRING)
+	return createRespOutput(SIMPLESTRING, OK)
 }
 
 func executeGet(args []string) (RespOutput, error) {
 	value := get(args[0])
 
 	if (value == NILSTRING) {
-		return createRespOutput(NILSTRING, EMPTY)
+		return createRespOutput(EMPTY, NILSTRING)
 	}
 
-	return createRespOutput(value, BULKSTRING)
+	return createRespOutput(BULKSTRING, value)
 }
 
 func executeInfo(args []string) (RespOutput, error) {
 	if (strings.ToUpper(args[0]) == REPLICATION) {
 		roleString := ROLE_STRING + serverConfig.role
-		return createRespOutput(roleString, BULKSTRING)
+
+		if (serverConfig.role == SLAVE_ROLE) {
+			return createRespOutput(BULKSTRING, roleString)
+		}
+		
+		replId := MASTER_REPLICATION_ID_STRING + "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
+		replOffset := MASTER_REPLICATION_OFFSET_STRING + "0"
+
+		return createRespOutput(BULKSTRING, roleString, replId, replOffset)
 	} else {
-		return createRespOutput(NILSTRING, EMPTY)
+		return createRespOutput(EMPTY, NILSTRING)
 	}
 }
 
