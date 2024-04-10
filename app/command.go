@@ -37,7 +37,7 @@ func executeInfo(args []string) (RespString, error) {
 		}
 
 		replId := MASTER_REPLICATION_ID_STRING + serverConfig.replicationId
-		replOffset := MASTER_REPLICATION_OFFSET_STRING + "0"
+		replOffset := MASTER_REPLICATION_OFFSET_STRING + serverConfig.replicationOffset
 
 		return createRespString(BULKSTRING, roleString, replId, replOffset)
 	} else {
@@ -47,6 +47,12 @@ func executeInfo(args []string) (RespString, error) {
 
 func executeReplConf(args []string) (RespString, error) {
 	return createRespString(SIMPLESTRING, OK)
+}
+
+func executePsync() (RespString, error) {
+	psyncResponse := FULLRESYNC + BLANK_SPACE + serverConfig.replicationId + BLANK_SPACE + serverConfig.replicationOffset
+
+	return createRespString(SIMPLESTRING, psyncResponse)
 }
 
 func executeCommand(clientCall ClientCall) (RespString, error) {
@@ -63,6 +69,8 @@ func executeCommand(clientCall ClientCall) (RespString, error) {
 			return executeInfo(clientCall.respCommand.args)
 		case REPLCONF:
 			return executeReplConf(clientCall.respCommand.args)
+		case PSYNC:
+			return executePsync()
 		default:
 			return "", errors.New("Command not implemented yet!")
 	}

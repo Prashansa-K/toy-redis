@@ -42,6 +42,7 @@ const (
 	FULLRESYNC = "FULLRESYNC"
 
 	NILSTRING = ""
+	BLANK_SPACE = " "
 	ROLE_STRING = "role:"
 	MASTER_REPLICATION_ID_STRING = "master_replid:"
 	MASTER_REPLICATION_OFFSET_STRING = "master_repl_offset:"

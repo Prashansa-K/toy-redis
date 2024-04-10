@@ -14,6 +14,7 @@ var serverConfig struct {
 	replicaOf string
 	role string
 	replicationId string
+	replicationOffset string
 }
 
 type ClientCall struct {
@@ -101,6 +102,7 @@ func main() {
 	if serverConfig.replicaOf == "" {
 		serverConfig.role = MASTER_ROLE
 		serverConfig.replicationId = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
+		serverConfig.replicationOffset = "0"
 	} else {
 		serverConfig.role = SLAVE_ROLE
 	}
